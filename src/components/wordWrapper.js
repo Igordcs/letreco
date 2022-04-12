@@ -5,7 +5,7 @@ import { WordLetter } from './wordLetter'
 export const WordWrapper = (props) => {
     return (
         <div className={`${styles.wordWrapper}`}>
-            {[...Array(props.length)].map((v, i) => <WordLetter char={props.word[i]} id={`${props.word}${props.word[i]}${i}`} />)}
+            {[...Array(props.length)].map((v, i) => <WordLetter key={props.word[i]} char={props.word[i]} id={`${props.word}${props.word[i]}${i}`} />)}
         </div>
     )
 }
