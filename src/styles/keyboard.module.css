@@ -1,0 +1,24 @@
+.keyBoardWrapper {
+    display: flex;
+    flex-direction: column;
+    width: 90vw;
+    max-width: 580px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 8vh;
+}
+
+.keyBoardFunctions {
+    display: flex;
+    flex-direction: row;
+    max-width: 10vw;
+    margin-bottom: 1.2rem;
+}
+  
+.keyBoardButton {
+    width: 2.5rem;
+    height: 3rem;
+    margin-right: 2px;
+    margin-top: 4px;
+
+}

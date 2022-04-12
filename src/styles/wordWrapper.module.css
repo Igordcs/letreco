@@ -1,0 +1,36 @@
+.wordWrapper {
+    display: flex;
+    flex-direction: row;
+    width: 80vw;  
+    max-width: 520px;
+    height: 5vh;
+    justify-content: center;
+    margin-top: 12px;
+}
+
+.letterWrapper {
+    display: flex;
+    width: 3rem;
+    height: 100%;
+    border: #8a8a8a solid 1.5px;
+    border-radius: 4px;
+    margin-right: 0.2rem;
+
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(68, 68, 68);
+
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: white;
+}
+
+.displaced {
+    border: 2px solid rgb(209, 152, 39);
+    background-color: rgb(226, 186, 106);
+}
+
+.right {
+    border: 2px solid rgb(16, 129, 58);
+    background-color: rgb(24, 176, 80);
+}
