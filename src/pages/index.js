@@ -122,8 +122,10 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if(currentStage + 1 > chances)
+    if(currentStage + 1 > chances){
+      toast(`A palavra era ${currentGuess}`)
       return resetGame();
+    }
   }, [currentStage])
 
   useEffect(() => {
