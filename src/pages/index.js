@@ -1,42 +1,31 @@
+import 'react-toastify/dist/ReactToastify.css';
 import React, {useEffect, useState} from 'react'
 import Head from 'next/head'
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import styles from '../styles/Home.module.css'
-import styleWord from '../styles/wordWrapper.module.css'
-import stylesKeyBoard from '../styles/keyboard.module.css'
 
-import { WordWrapper } from '../components/wordWrapper'
+import styles from '../styles/Home.module.css'
+import { WordGuess } from '../components/wordGuess';
 import { Keyboard } from '../components/keyboard'
 import {WORDLIST} from '../words';
 import {VALIDGUESSES} from '../validGuesses';
+import { GUESSES_CHANCES } from '../constants';
 
 export default function Home() {
   const [words, setWords] = useState(["", "", "", "", "", ""]);
+  const [wordColors, setWordColors] = useState(words.map((item, index) => [0, 0, 0, 0, 0]));
+  const [disabledKeys, setDisabledKeys] = useState("");
+  const [displacedKeys, setDisplacedKeys] = useState("");
+  const [rightKeys, setRightKeys] = useState("");
   const [currentGuess, setCurrentGuess] = useState("");
   const [currentStage, setCurrentStage] = useState(0);
+  const [streak, setStreak] = useState(0);
   const validKeys = "qwertyuiopasdfghjklzxcvbnm"
 
-  const chances = 6
-  const caracteres = 5
+  console.log(wordColors[3])
 
   const resetGame = () => {
-    words.map((word) => {
-      const wordSplit = word.split("")
-
-      wordSplit.map((char, index) => {
-        const letterDiv = document.querySelectorAll('#'+word+char+index)
-        const keyBoardButton = document.querySelector('#keyBoard'+char.toUpperCase())
-
-        keyBoardButton.classList.value = `${stylesKeyBoard.keyBoardButton}`
-
-        letterDiv.forEach(element => {
-          element.classList.value = `${styleWord.letterWrapper}`
-        })
-      })
-    })
-
     setWords(["", "", "", "", "", ""])
+    setWordColors(words.map((item, index) => [0, 0, 0, 0, 0]))
     setCurrentStage(0)
     getRandomWord()
   }
@@ -55,42 +44,44 @@ export default function Home() {
     if (currentWord.length < 5)
       return toast.warn("A palavra deve conter 5 letras.")
 
-    const currentWordsplit = currentWord.split("")
-
-    currentWordsplit.map((char, index) => {
-      const isInWord = currentGuess.includes(char);
-      const isInSamePos = isInWord && currentGuess[index] == char;
-
-      if (!isInWord){
-        const keyBoardButton = document.querySelector("#keyBoard"+char.toUpperCase())
-        keyBoardButton.classList.add(`${styles.keyBoardNull}`)
-      }
-
-      if (isInWord && !isInSamePos)
-      {
-        const letterDiv = document.querySelectorAll('#'+currentWord+char+index)
-        console.log(letterDiv)
-        letterDiv.forEach((element) => {
-          element.classList.add(`${styleWord.displaced}`)
-        })
-      }
-        
-      if (isInWord && isInSamePos)
-      {
-        const letterDiv = document.querySelectorAll('#'+currentWord+char+index)
-        letterDiv.forEach((element) => {
-          element.classList.add(`${styleWord.right}`)
-        })
-      }
-
-    })
-
     if (currentWord == currentGuess) {
-      toast.success('Aeeee, você acertou!')
+      let currentStreak = streak
+      currentStreak += 1
+      setStreak(currentStreak)
+      toast.success(`Aeeee, você acertou! SUA SEQUÊNCIA É DE ${currentStreak} ACERTOS`)
+      window.localStorage.setItem("@charadinha:Streak", JSON.stringify({currentStreak}))
       return resetGame();
     }
 
-    
+    currentWord.split("").map((char, index) => {
+      const isInWord = currentGuess.includes(char);
+      const isInSamePos = char == currentGuess[index]
+
+      if (isInWord && !isInSamePos) {
+        const wordColorArray = wordColors
+        wordColorArray[currentStage][index] = 1 // displaced
+        setDisplacedKeys(displacedKeys + char)
+        setWordColors(wordColorArray)
+        return;
+      }
+
+      if (isInWord && isInSamePos) {
+        const wordColorArray = wordColors
+        wordColorArray[currentStage][index] = 2 // exactPos
+        setRightKeys(rightKeys + char)
+        setWordColors(wordColorArray)
+        return;
+      }
+
+      if (!isInWord) {
+        const wordColorArray = wordColors
+        wordColorArray[currentStage][index] = 3 // wrong
+        setDisabledKeys(disabledKeys + char)
+        setWordColors(wordColorArray)
+        return;
+      }
+
+    })
 
     setCurrentStage(currentStage + 1)
   }
@@ -118,17 +109,31 @@ export default function Home() {
 
   const getRandomWord = () => {
     const random = Math.floor(Math.random() * WORDLIST.length)
-    setCurrentGuess(WORDLIST[random].normalize("NFD"))
+    setCurrentGuess(WORDLIST[random].normalize("NFD").replace(/[^a-zA-Zs]/g, ""))
   }
 
   useEffect(() => {
-    if(currentStage + 1 > chances){
+    if(currentStage + 1 > GUESSES_CHANCES){
       toast(`A palavra era ${currentGuess}`)
+      setStreak(0)
+      window.localStorage.setItem("@charadinha:Streak", JSON.stringify({currentStreak: 0}))
       return resetGame();
     }
   }, [currentStage])
 
   useEffect(() => {
+
+    const getStoredStreak = () => {
+      const storedValue = window.localStorage.getItem("@charadinha:Streak")
+
+      if (storedValue) {
+        const value = JSON.parse(storedValue)
+        setStreak(Number(value.currentStreak))
+      }
+
+    }
+
+    getStoredStreak()
     getRandomWord()
   }, [])
 
@@ -149,20 +154,18 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1>LETRECO DA GAMBIARRA</h1>
-
-        {[...Array(chances)].map((x, i) =>
-          <WordWrapper key={i} word={words[i]} length={caracteres} />
-        )}
+ 
+        <WordGuess words={words} wordColors={wordColors} />
         
-        <Keyboard handleKeyPress={handleKeyPress}/>
+        <Keyboard handleKeyPress={handleKeyPress}  />
 
       </main>
 
       <ToastContainer
-        position="top-right"
-        autoClose={1400}
+        position="top-center"
+        autoClose={1500}
         hideProgressBar={true}
-        newestOnTop={true}
+        newestOnTop={false}
         closeOnClick
         rtl={false}
         pauseOnFocusLoss

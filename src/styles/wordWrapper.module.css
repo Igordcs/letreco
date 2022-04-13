@@ -1,26 +1,36 @@
+.wordGuess {
+    display: flex;
+    flex-direction: column;
+    width: 80vw;
+    max-width: 520px;
+    height: 35vh;
+    max-height: 25rem;
+    justify-content: center;
+    margin-top: 12px;
+}
 .wordWrapper {
     display: flex;
     flex-direction: row;
-    width: 80vw;  
+    width: "100%";  
     max-width: 520px;
     height: 5vh;
     justify-content: center;
-    margin-top: 12px;
+    margin-top: 1rem;
 }
 
 .letterWrapper {
     display: flex;
     width: 3rem;
-    height: 100%;
-    border: #8a8a8a solid 1.5px;
+    height: 3.4rem;
+    border: #585858 solid 1.5px;
     border-radius: 4px;
-    margin-right: 0.2rem;
+    margin-right: 4px;
 
     align-items: center;
     justify-content: center;
-    background-color: rgb(68, 68, 68);
+    background-color: rgb(37, 41, 46);
 
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: white;
 }
@@ -33,4 +43,9 @@
 .right {
     border: 2px solid rgb(16, 129, 58);
     background-color: rgb(24, 176, 80);
+}
+
+.wrong {
+    border: 2px solid rgb(211, 67, 67);
+    background-color: rgb(176, 24, 24);
 }

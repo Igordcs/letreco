@@ -29,7 +29,9 @@ export const Keyboard = (props) => {
                             id={`keyBoard${char}`} 
                             className={`${styles.keyBoardButton}`}
                             onClick={() => props.handleKeyPress({key: char})}
-                            >{char}</button>)}
+                            >
+                                {char}
+                            </button>)}
                     </div>
                 )
             })}

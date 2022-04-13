@@ -3,9 +3,11 @@ import styles from '../styles/wordWrapper.module.css'
 import { WordLetter } from './wordLetter'
 
 export const WordWrapper = (props) => {
+    const wordSplited = props.word.split("")
+
     return (
         <div className={`${styles.wordWrapper}`}>
-            {[...Array(props.length)].map((v, i) => <WordLetter key={props.word[i]} char={props.word[i]} id={`${props.word}${props.word[i]}${i}`} />)}
+            {[...Array(props.caracteres)].map((v, i) => <WordLetter key={i} char={wordSplited[i]} letterColor={props.wordColors[i]} />)}
         </div>
     )
 }
