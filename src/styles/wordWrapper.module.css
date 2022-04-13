@@ -46,6 +46,5 @@
 }
 
 .wrong {
-    border: 2px solid rgb(211, 67, 67);
-    background-color: rgb(176, 24, 24);
+    filter: brightness(0.5);
 }

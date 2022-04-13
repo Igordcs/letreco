@@ -26,6 +26,9 @@ export default function Home() {
   const resetGame = () => {
     setWords(["", "", "", "", "", ""])
     setWordColors(words.map((item, index) => [0, 0, 0, 0, 0]))
+    setDisabledKeys("")
+    setRightKeys("")
+    setDisplacedKeys("")
     setCurrentStage(0)
     getRandomWord()
   }
@@ -53,36 +56,44 @@ export default function Home() {
       return resetGame();
     }
 
+    let disabledKeysTemp = disabledKeys
+    let displacedKeysTemp = displacedKeys
+    let rightKeysTemp = rightKeys
+
     currentWord.split("").map((char, index) => {
       const isInWord = currentGuess.includes(char);
       const isInSamePos = char == currentGuess[index]
+      const isRight = rightKeysTemp.includes(char)
 
-      if (isInWord && !isInSamePos) {
+      if (isInWord && !isInSamePos && !isRight) {
+        displacedKeysTemp += char
         const wordColorArray = wordColors
         wordColorArray[currentStage][index] = 1 // displaced
-        setDisplacedKeys(displacedKeys + char)
         setWordColors(wordColorArray)
         return;
       }
-
+      
       if (isInWord && isInSamePos) {
+        rightKeysTemp += char
         const wordColorArray = wordColors
         wordColorArray[currentStage][index] = 2 // exactPos
-        setRightKeys(rightKeys + char)
         setWordColors(wordColorArray)
         return;
       }
-
-      if (!isInWord) {
+      
+      if (!isInWord || isInWord && !isInSamePos && isRight) {
+        disabledKeysTemp += char
         const wordColorArray = wordColors
         wordColorArray[currentStage][index] = 3 // wrong
-        setDisabledKeys(disabledKeys + char)
         setWordColors(wordColorArray)
         return;
       }
-
+      
     })
-
+    
+    setDisplacedKeys(displacedKeysTemp)
+    setRightKeys(rightKeysTemp)
+    setDisabledKeys(disabledKeysTemp)
     setCurrentStage(currentStage + 1)
   }
 
@@ -114,7 +125,7 @@ export default function Home() {
 
   useEffect(() => {
     if(currentStage + 1 > GUESSES_CHANCES){
-      toast(`A palavra era ${currentGuess}`)
+      toast(`Que pena! A palavra era ${currentGuess}`)
       setStreak(0)
       window.localStorage.setItem("@charadinha:Streak", JSON.stringify({currentStreak: 0}))
       return resetGame();
@@ -157,7 +168,7 @@ export default function Home() {
  
         <WordGuess words={words} wordColors={wordColors} />
         
-        <Keyboard handleKeyPress={handleKeyPress}  />
+        <Keyboard handleKeyPress={handleKeyPress} disabledKeys={disabledKeys} displacedKeys={displacedKeys} rightKeys={rightKeys}  />
 
       </main>
 
