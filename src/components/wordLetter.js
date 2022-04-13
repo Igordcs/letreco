@@ -20,7 +20,7 @@ export const WordLetter = (props) => {
 
     return (
         <div id={props.id} className={`${styles.letterWrapper} ${checkLetter()}`} >
-            {props.char}
+            {props.char ? props.char.toUpperCase() : ''}
         </div>
     )
 }

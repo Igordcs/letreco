@@ -51,7 +51,7 @@ export default function Home() {
       let currentStreak = streak
       currentStreak += 1
       setStreak(currentStreak)
-      toast.success(`Aeeee, você acertou! SUA SEQUÊNCIA É DE ${currentStreak} ACERTOS`)
+      toast.success(`Aeeee, você acertou! SUA SEQUÊNCIA É DE ${currentStreak} ${currentStreak > 1 ? "ACERTOS" : "ACERTO"}`)
       window.localStorage.setItem("@charadinha:Streak", JSON.stringify({currentStreak}))
       return resetGame();
     }
