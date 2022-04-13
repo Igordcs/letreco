@@ -8,7 +8,7 @@ export const WordGuess = (props) => {
     return (
         <div className={styleWord.wordGuess}>
             {[...Array(chances)].map((x, i) =>
-                <WordWrapper caracteres={WORD_CARACTERES} word={props.words[i]} wordColors={props.wordColors[i]} />
+                <WordWrapper key={`WordGuess${i}`} caracteres={WORD_CARACTERES} word={props.words[i]} wordColors={props.wordColors[i]} />
             )}
         </div> 
     )
