@@ -23,8 +23,6 @@ export default function Home() {
   const [streak, setStreak] = useState(0);
   const validKeys = "qwertyuiopasdfghjklzxcvbnm"
 
-  console.log(wordColors[3])
-
   const resetGame = () => {
     setWords(["", "", "", "", "", ""])
     setWordColors(words.map((item, index) => [0, 0, 0, 0, 0]))
@@ -167,8 +165,6 @@ export default function Home() {
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
   }, [words[currentStage]])
-
-  console.log(currentGuess)
 
   const onCloseModal = () => {
     setModalVisible(false)
