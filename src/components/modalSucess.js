@@ -14,8 +14,8 @@ export const ModalSucess = (props) => {
             <h1>Você acertou a palavra!!</h1>
 
             <div className={`${styles.histogram}`}>
-                {props.wordColors.map((row, index) => <div className={`${styles.histogramCellWrapper}`}>
-                    {row.map((letterColor, index) => <WordLetter letterColor={letterColor} />)}
+                {props.wordColors.map((row, index) => <div key={`row${index}`} className={`${styles.histogramCellWrapper}`}>
+                    {row.map((letterColor, index) => <WordLetter key={`cell${index}`} letterColor={letterColor} />)}
                 </div>)}
             </div>
             
