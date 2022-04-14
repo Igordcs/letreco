@@ -133,7 +133,7 @@ export default function Home() {
 
   const getRandomWord = () => {
     const random = Math.floor(Math.random() * WORDLIST.length)
-    setCurrentGuess("sonar")
+    setCurrentGuess(WORDLIST[random].normalize("NFD").replace(/[^a-zA-Zs]/g, ""))
   }
 
   useEffect(() => {
