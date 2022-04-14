@@ -9,6 +9,7 @@ import { Keyboard } from '../components/keyboard'
 import {WORDLIST} from '../words';
 import {VALIDGUESSES} from '../validGuesses';
 import { GUESSES_CHANCES } from '../constants';
+import { ModalSucess } from '../components/modalSucess';
 
 export default function Home() {
   const [words, setWords] = useState(["", "", "", "", "", ""]);
@@ -18,6 +19,7 @@ export default function Home() {
   const [rightKeys, setRightKeys] = useState("");
   const [currentGuess, setCurrentGuess] = useState("");
   const [currentStage, setCurrentStage] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
   const [streak, setStreak] = useState(0);
   const validKeys = "qwertyuiopasdfghjklzxcvbnm"
 
@@ -35,7 +37,10 @@ export default function Home() {
 
   const onDelete = () => {
     const newArray = [...words]
-    newArray[currentStage] = ""
+    const currentWord = newArray[currentStage]
+    currentWord = currentWord.split("")
+    currentWord.splice(-1, 1)
+    newArray[currentStage] = currentWord.join("")
     setWords(newArray)
   } 
   
@@ -50,22 +55,40 @@ export default function Home() {
     if (currentWord == currentGuess) {
       let currentStreak = streak
       currentStreak += 1
+      const wordColorArray = wordColors
+      wordColorArray[currentStage] = [2, 2, 2, 2, 2]
+      setWordColors(wordColorArray)
       setStreak(currentStreak)
       toast.success(`Aeeee, você acertou! SUA SEQUÊNCIA É DE ${currentStreak} ${currentStreak > 1 ? "ACERTOS" : "ACERTO"}`)
+      setModalVisible(true)
       window.localStorage.setItem("@charadinha:Streak", JSON.stringify({currentStreak}))
-      return resetGame();
+      return;
     }
 
     let disabledKeysTemp = disabledKeys
-    let displacedKeysTemp = displacedKeys
-    let rightKeysTemp = rightKeys
+    let displacedKeysTemp = ""
+    let rightKeysTemp = ""
+
+    currentWord.split("").forEach((item, index) => {
+      const isInWord = currentGuess.includes(item);
+      const isInSamePos = item == currentGuess[index]
+
+      if (isInWord && isInSamePos) {
+        rightKeysTemp += item
+        const wordColorArray = wordColors
+        wordColorArray[currentStage][index] = 2 // exactPos
+        setWordColors(wordColorArray)
+        return;
+      }
+    })
 
     currentWord.split("").map((char, index) => {
       const isInWord = currentGuess.includes(char);
       const isInSamePos = char == currentGuess[index]
       const isRight = rightKeysTemp.includes(char)
+      const isDisplaced = displacedKeysTemp.includes(char)
 
-      if (isInWord && !isInSamePos && !isRight) {
+      if (isInWord && !isInSamePos && !isRight && !isDisplaced) {
         displacedKeysTemp += char
         const wordColorArray = wordColors
         wordColorArray[currentStage][index] = 1 // displaced
@@ -73,15 +96,7 @@ export default function Home() {
         return;
       }
       
-      if (isInWord && isInSamePos) {
-        rightKeysTemp += char
-        const wordColorArray = wordColors
-        wordColorArray[currentStage][index] = 2 // exactPos
-        setWordColors(wordColorArray)
-        return;
-      }
-      
-      if (!isInWord || isInWord && !isInSamePos && isRight) {
+      if (!isInWord || isInWord && !isInSamePos && (isRight || isDisplaced) ) {
         disabledKeysTemp += char
         const wordColorArray = wordColors
         wordColorArray[currentStage][index] = 3 // wrong
@@ -120,7 +135,7 @@ export default function Home() {
 
   const getRandomWord = () => {
     const random = Math.floor(Math.random() * WORDLIST.length)
-    setCurrentGuess(WORDLIST[random].normalize("NFD").replace(/[^a-zA-Zs]/g, ""))
+    setCurrentGuess("sonar")
   }
 
   useEffect(() => {
@@ -155,6 +170,11 @@ export default function Home() {
 
   console.log(currentGuess)
 
+  const onCloseModal = () => {
+    setModalVisible(false)
+    return resetGame();
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -163,17 +183,21 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      <ModalSucess wordColors={wordColors} visible={modalVisible} onAbort={onCloseModal}/>
+      
       <main className={styles.main}>
         <h1>LETRECO DA GAMBIARRA</h1>
+
  
         <WordGuess words={words} wordColors={wordColors} />
         
         <Keyboard handleKeyPress={handleKeyPress} disabledKeys={disabledKeys} displacedKeys={displacedKeys} rightKeys={rightKeys}  />
 
+
       </main>
 
       <ToastContainer
-        position="top-center"
+        position="top-left"
         autoClose={1500}
         hideProgressBar={true}
         newestOnTop={false}
@@ -181,7 +205,6 @@ export default function Home() {
         rtl={false}
         pauseOnFocusLoss
         draggable
-        pauseOnHover
       />
     </div>
   )

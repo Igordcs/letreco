@@ -11,11 +11,15 @@ export const Keyboard = (props) => {
 
     const checkLetter = (char) => {
         const key = char.toLowerCase()
-        if (props.disabledKeys.includes(key))
+        const isWrong = props.disabledKeys.includes(key)
+        const isDisplaced = props.displacedKeys.includes(key)
+        const isRight = props.rightKeys.includes(key)
+
+        if (isWrong && !isDisplaced && !isRight)
             return `${styles.wrong}`
-        if (props.displacedKeys.includes(key))
+        if (isDisplaced)
             return `${styles.displaced}`
-        if (props.rightKeys.includes(key))
+        if (isRight)
             return `${styles.right}`
 
         return ``

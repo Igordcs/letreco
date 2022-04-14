@@ -28,8 +28,8 @@ button {
   box-sizing: border-box;
 }
 
-@media(max-width: 480px){
+@media(max-width: 750px){
   * {
-    font-size: 0.78rem;
+    font-size: 0.75rem;
   }
 }
